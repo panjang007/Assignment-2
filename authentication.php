@@ -12,23 +12,24 @@ $option = [
     'cost' => 12,
 ];
 
-$hashcheck = password_hash($password, PASSWORD_BCRYPT, $option);
+$sqlauthenticate = "SELECT password FROM login WHERE username = '$username'";
 
-$sqlauthenticate = "SELECT * FROM LOGIN WHERE username = '$username' and password = '$hashcheck'";
+//executing the sql command
+$result = $startcon->query($sqlauthenticate);
 
-//result of the search
-$result = mysqli_query($startcon, $sqlauthenticate);
-$row = mysqli_fetch_array($result, MYSQLI_ASSOC);
-$count = mysqli_num_rows($result);
-
-if ($count == 1) {
-    echo '<script type="text/JavaScript"> 
-     alert("Successful");
-     </script>';
+if ($result->num_rows > 0) {
+    // output data of each row
+    while ($row = $result->fetch_assoc()) {
+        $passcheck = $row["password"];
+    }
 } else {
-    echo '<script type="text/JavaScript"> 
-     alert("Login failed");
-     </script>';
-    exit();
+    echo "0 results";
 }
+
+if (password_verify($password, $passcheck)) {
+    echo '<script>alert("Login Successful")</script>';
+} else {
+    echo '<script>alert("Login Failed")</script>';
+}
+
 ?>
